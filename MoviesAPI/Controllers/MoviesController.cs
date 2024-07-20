@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using MoviesAPI.Data;
 using MoviesAPI.Data.Dtos;
@@ -63,6 +64,29 @@ public class MoviesController : ControllerBase
         if(movie == null) return NotFound(new { Message = "Filme não encontrado" });
 
         _mapper.Map(movieDto, movie);
+        _context.SaveChanges();
+
+        return NoContent();
+    }
+
+    [HttpPatch("{id}")]
+    public IActionResult UpdatePartialMovie(int id, 
+        JsonPatchDocument<UpdateMovieDto> patch)
+    {
+        var movie = _context.Movies.FirstOrDefault(f => f.Id == id);
+        if (movie == null) return NotFound(new { Message = "Filme não encontrado" });
+
+
+        var movieToUpdate = _mapper.Map<UpdateMovieDto>(movie);
+
+        patch.ApplyTo(movieToUpdate, ModelState);
+
+        if(!TryValidateModel(movieToUpdate))
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        _mapper.Map(movieToUpdate, movie);
         _context.SaveChanges();
 
         return NoContent();
