@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoviesAPI.Models;
-using System.Collections.Generic;
 
 namespace MoviesAPI.Controllers;
 
@@ -9,7 +8,7 @@ namespace MoviesAPI.Controllers;
 public class MoviesController : ControllerBase
 {
     private static List<Movie> movies = new List<Movie>();
-    private static int id = 0;
+    private static int Id = 0;
 
     [HttpGet]
     public IActionResult GetMovies([FromQuery] int skip = 0, [FromQuery] int take = 10)
@@ -22,7 +21,7 @@ public class MoviesController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetMovieByID(int id)
     {
-        Movie? movie = movies.FirstOrDefault(f => f.id == id);
+        Movie? movie = movies.FirstOrDefault(f => f.Id == id);
         if(movie == null)
         {
             return NotFound();
@@ -38,11 +37,11 @@ public class MoviesController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        movie.id = id++;
+        movie.Id = Id++;
         movies.Add(movie);
         
         return CreatedAtAction(nameof(GetMovieByID), 
-            new { id = movie.id}, 
+            new { Id = movie.Id}, 
             movie);
     }
 }

@@ -5,7 +5,9 @@ namespace MoviesAPI.Models
 {
     public class Movie
     {
-        public int id { get; internal set; }
+        [Key]
+        [Required]
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "O título é obrigatório.")]
         public string Title { get; set; }
