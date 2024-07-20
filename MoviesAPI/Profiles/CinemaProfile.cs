@@ -9,7 +9,9 @@ public class CinemaProfile : Profile
     public CinemaProfile()
     {
         CreateMap<CreateCinemaDto, Cinema>();
-        CreateMap<Cinema, ReadCinemaDto>();
         CreateMap<UpdateCinemaDto, Cinema>();
+        CreateMap<Cinema, ReadCinemaDto>()
+            .ForMember(cinemaDto => cinemaDto.Address, 
+            opt => opt.MapFrom(cinema => cinema.Address));
     }
 }

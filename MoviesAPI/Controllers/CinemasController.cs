@@ -3,6 +3,7 @@ using MoviesAPI.Data.Dtos;
 using MoviesAPI.Data;
 using MoviesAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MoviesAPI.Controllers
 {
@@ -21,10 +22,20 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<ReadCinemaDto> GetCinemas()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult GetCinemas([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
-            return _mapper.Map<List<ReadCinemaDto>>(_context.Cinemas.ToList());
+            var cinemas = _context.Cinemas
+                .Skip(skip)
+                .Take(take)
+                .Include(c => c.Address)
+                .ToList();
+
+            var cinemaDtos = _mapper.Map<List<ReadCinemaDto>>(cinemas);
+
+            return Ok(cinemaDtos);
         }
+
 
         [HttpGet("{id}")]
         public IActionResult GetCinemaByID(int id)
