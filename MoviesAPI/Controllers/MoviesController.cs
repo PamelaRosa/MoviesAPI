@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoviesAPI.Data;
 using MoviesAPI.Models;
 
 namespace MoviesAPI.Controllers;
@@ -7,13 +8,18 @@ namespace MoviesAPI.Controllers;
 [Route("[controller]")]
 public class MoviesController : ControllerBase
 {
-    private static List<Movie> movies = new List<Movie>();
-    private static int Id = 0;
+
+    private MovieContext _context;
+
+    public MoviesController(MovieContext context)
+    {
+        _context = context;
+    }
 
     [HttpGet]
     public IActionResult GetMovies([FromQuery] int skip = 0, [FromQuery] int take = 10)
     {
-        IEnumerable<Movie> filteredMovies = movies.Skip(skip).Take(take);
+        IEnumerable<Movie> filteredMovies = _context.Movies.Skip(skip).Take(take);
 
         return Ok(filteredMovies);
     }
@@ -21,7 +27,8 @@ public class MoviesController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetMovieByID(int id)
     {
-        Movie? movie = movies.FirstOrDefault(f => f.Id == id);
+        Movie? movie = _context.Movies.FirstOrDefault(f => f.Id == id);
+
         if(movie == null)
         {
             return NotFound();
@@ -37,9 +44,10 @@ public class MoviesController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        movie.Id = Id++;
-        movies.Add(movie);
-        
+
+        _context.Movies.Add(movie);
+        _context.SaveChanges();
+
         return CreatedAtAction(nameof(GetMovieByID), 
             new { Id = movie.Id}, 
             movie);
