@@ -25,8 +25,9 @@ public class MoviesController : ControllerBase
     public IActionResult GetMovies([FromQuery] int skip = 0, [FromQuery] int take = 10)
     {
         IEnumerable<Movie> filteredMovies = _context.Movies.Skip(skip).Take(take);
+        IEnumerable<ReadMovieDto> moviesDto = _mapper.Map<List<ReadMovieDto>>(filteredMovies);
 
-        return Ok(filteredMovies);
+        return Ok(moviesDto);
     }
 
     [HttpGet("{id}")]
@@ -35,8 +36,9 @@ public class MoviesController : ControllerBase
         Movie? movie = _context.Movies.FirstOrDefault(f => f.Id == id);
 
         if(movie == null) return NotFound(new { Message = "Filme não encontrado" });
+        var movieDto = _mapper.Map<ReadMovieDto>(movie);
 
-        return Ok(movie);
+        return Ok(movieDto);
     }
 
     [HttpPost]
@@ -87,6 +89,18 @@ public class MoviesController : ControllerBase
         }
 
         _mapper.Map(movieToUpdate, movie);
+        _context.SaveChanges();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteMovie(int id)
+    {
+        var movie = _context.Movies.FirstOrDefault(f => f.Id == id);
+        if (movie == null) return NotFound(new { Message = "Filme não encontrado" });
+
+        _context.Remove(movie);
         _context.SaveChanges();
 
         return NoContent();
