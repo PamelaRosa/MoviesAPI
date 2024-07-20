@@ -4,78 +4,78 @@ using MoviesAPI.Data.Dtos;
 using MoviesAPI.Data;
 using MoviesAPI.Models;
 
-namespace MoviesAPI.Controllers;
-
-
-[ApiController]
-[Route("[controller]")]
-public class AddressesController : ControllerBase
+namespace MoviesAPI.Controllers
 {
 
-
-    private MovieContext _context;
-    private IMapper _mapper;
-
-    public AddressesController(MovieContext context, IMapper mapper)
+    [ApiController]
+    [Route("[controller]")]
+    public class AddressesController : ControllerBase
     {
-        _context = context;
-        _mapper = mapper;
-    }
 
-    [HttpGet]
-    public IEnumerable<ReadAddressDto> GetAddresses()
-    {
-        return _mapper.Map<List<ReadAddressDto>>(_context.Addresses.ToList());
-    }
 
-    [HttpGet("{id}")]
-    public IActionResult GetAddressByID(int id)
-    {
-        Address? address = _context.Addresses.FirstOrDefault(address => address.Id == id);
-        if (address != null)
+        private MovieContext _context;
+        private IMapper _mapper;
+
+        public AddressesController(MovieContext context, IMapper mapper)
         {
-            ReadAddressDto addressDto = _mapper.Map<ReadAddressDto>(address);
-            return Ok(addressDto);
+            _context = context;
+            _mapper = mapper;
         }
-        return NotFound();
-    }
 
-    [HttpPost]
-    public IActionResult CreateAddress([FromBody] CreateAddressDto addressDto)
-    {
-        Address? address = _mapper.Map<Address>(addressDto);
-        _context.Addresses.Add(address);
-        _context.SaveChanges();
-        return CreatedAtAction(nameof(GetAddressByID), new { Id = address.Id }, addressDto);
-    }
-
-    [HttpPut("{id}")]
-    public IActionResult UpdateAddress(int id, [FromBody] UpdateAddressDto addressDto)
-    {
-        Address? address = _context.Addresses.FirstOrDefault(address => address.Id == id);
-        if (address == null)
+        [HttpGet]
+        public IEnumerable<ReadAddressDto> GetAddresses()
         {
+            return _mapper.Map<List<ReadAddressDto>>(_context.Addresses.ToList());
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetAddressByID(int id)
+        {
+            Address? address = _context.Addresses.FirstOrDefault(address => address.Id == id);
+            if (address != null)
+            {
+                ReadAddressDto addressDto = _mapper.Map<ReadAddressDto>(address);
+                return Ok(addressDto);
+            }
             return NotFound();
         }
-        _mapper.Map(addressDto, address);
-        _context.SaveChanges();
-        return NoContent();
-    }
 
-
-    [HttpDelete("{id}")]
-    public IActionResult DeleteAddress(int id)
-    {
-        Address? address = _context.Addresses.FirstOrDefault(address => address.Id == id);
-        if (address == null)
+        [HttpPost]
+        public IActionResult CreateAddress([FromBody] CreateAddressDto addressDto)
         {
-            return NotFound();
+            Address? address = _mapper.Map<Address>(addressDto);
+            _context.Addresses.Add(address);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetAddressByID), new { Id = address.Id }, addressDto);
         }
-        _context.Remove(address);
-        _context.SaveChanges();
-        return NoContent();
-    }
 
-}
+        [HttpPut("{id}")]
+        public IActionResult UpdateAddress(int id, [FromBody] UpdateAddressDto addressDto)
+        {
+            Address? address = _context.Addresses.FirstOrDefault(address => address.Id == id);
+            if (address == null)
+            {
+                return NotFound();
+            }
+            _mapper.Map(addressDto, address);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteAddress(int id)
+        {
+            Address? address = _context.Addresses.FirstOrDefault(address => address.Id == id);
+            if (address == null)
+            {
+                return NotFound();
+            }
+            _context.Remove(address);
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+    }
 
 }

@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MoviesAPI.Models;
-
-public class Cinema
+namespace MoviesAPI.Models
 {
-    [Key]
-    [Required]
-    public int Id { get; set; }
+    public class Cinema
+    {
+        [Key]
+        [Required]
+        public int Id { get; set; }
 
-    [Required(ErrorMessage = "O campo de nome é obrigatório.")] 
-    public string Name { get; set; }
+        [Required(ErrorMessage = "O campo de nome é obrigatório.")]
+        public string Name { get; set; }
 
-    public int AddressId { get; set; }
-    public virtual Address Address { get; set; }
+        public int AddressId { get; set; }
+        public virtual Address? Address { get; set; }
+    }
 }
