@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using MoviesAPI.Data;
+using MoviesAPI.Data.Dtos;
 using MoviesAPI.Models;
 
 namespace MoviesAPI.Controllers;
@@ -10,10 +12,12 @@ public class MoviesController : ControllerBase
 {
 
     private MovieContext _context;
+    private IMapper _mapper;
 
-    public MoviesController(MovieContext context)
+    public MoviesController(MovieContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -38,12 +42,14 @@ public class MoviesController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateMovie([FromBody] Movie movie)
+    public IActionResult CreateMovie([FromBody] CreateMovieDto movieDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+
+        Movie movie = _mapper.Map<Movie>(movieDto);
 
         _context.Movies.Add(movie);
         _context.SaveChanges();
